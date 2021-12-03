@@ -21,9 +21,7 @@ pub mod part1 {
         }
 
         let gamma_rate = u32::from_str_radix(&most_common_bits.iter().collect::<String>(), 2).unwrap();
-        let mask: u32 = (0..most_common_bits.len()).into_iter()
-            .map(|e| 2_u32.pow(e as u32))
-            .sum();
+        let mask: u32 = 2_u32.pow(most_common_bits.len() as u32) - 1;
         let epsilon_rate = !gamma_rate & mask;
 
         gamma_rate * epsilon_rate
