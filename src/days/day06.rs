@@ -24,7 +24,6 @@ pub mod part1 {
 }
 
 pub mod part2 {
-    use std::collections::HashMap;
     use crate::util::input_parser;
 
     pub fn start() -> u64 {
@@ -33,44 +32,20 @@ pub mod part2 {
             .map(|s| s.parse().unwrap())
             .collect();
 
-        let map = (0..9).fold(HashMap::new(), |mut acc, f| {
-            acc.insert(f, 0);
-            acc
-        });
-
-        let mut cycles: Vec<(u32, u64)> = input.iter().fold(map, |mut acc, f| {
-            acc.insert(*f, acc.get(f).unwrap() + 1);
-            acc
-        }).into_iter().collect();
+        let mut cycles = vec![0; 9];
+        input.into_iter().for_each(|i| cycles[i as usize] += 1);
 
         let days = 256;
         for _ in 0..days {
-            let mut new_cycles = vec![];
-            let mut reset_fish = 0;
-            for i in 0..cycles.len() {
-                let (timer, count) = cycles[i];
-                if timer == 0 {
-                    new_cycles.push((8, count));
-                    reset_fish += count;
-                } else {
-                    new_cycles.push((timer - 1, count));
-                }
+            let mut new_cycles = vec![0; 9];
+            for i in 0..cycles.len() - 1 {
+                new_cycles[i] = cycles[i + 1];
             }
-
-            if reset_fish > 0 {
-                for i in 0..new_cycles.len() {
-                    let (timer, _) = new_cycles[i];
-                    if timer == 6 {
-                        new_cycles[i].1 += reset_fish;
-                    }
-                }
-            }
-
+            new_cycles[6] += cycles[0];
+            new_cycles[8] = cycles[0];
             cycles = new_cycles;
         }
 
-        cycles.iter()
-            .map(|(_, count)| count)
-            .sum()
+        cycles.iter().sum()
     }
 }
