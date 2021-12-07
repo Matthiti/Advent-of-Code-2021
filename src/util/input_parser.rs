@@ -35,7 +35,7 @@ impl Error for ParseError {
 }
 
 pub fn parse_file<T: FromStr>(file: &str) -> Result<Vec<T>, ParseError> {
-    return read_lines(file)?
+    read_lines(file)?
         .map(|line| match line?.parse() {
             Err(_) => Err(ParseError::new(String::from("Cannot parse value"))),
             Ok(value) => Ok(value)
@@ -45,6 +45,16 @@ pub fn parse_file<T: FromStr>(file: &str) -> Result<Vec<T>, ParseError> {
 
 pub fn parse_file_raw(file: &str) -> std::io::Result<String> {
     fs::read_to_string(file)
+}
+
+pub fn parse_file_horizontal<T: FromStr>(file: &str, delimiter: &str) -> Result<Vec<T>, ParseError> {
+    parse_file_raw(file)?
+        .split(delimiter)
+        .map(|item| match item.parse() {
+            Err(_) => Err(ParseError::new(String::from("Cannot parse value"))),
+            Ok(value) => Ok(value)
+        })
+        .collect()
 }
 
 // Source: https://doc.rust-lang.org/rust-by-example/std_misc/file/read_lines.html
